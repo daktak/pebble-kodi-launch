@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include "layout.h"
 #include "movies.h"
 
 #define KEY_ERROR     0
@@ -126,9 +127,9 @@ static void movies_window_load(Window *window) {
 	text_layer_set_text_alignment(s_movies_loading_layer, GTextAlignmentCenter);
 	text_layer_set_background_color(s_movies_loading_layer, GColorClear);
 	layer_add_child(window_layer, text_layer_get_layer(s_movies_loading_layer));
-	s_no_movies_layer = text_layer_create(GRect(0, 50, bounds.size.w, 80));
+	s_no_movies_layer = text_layer_create(GRect(0, SCALE_H(bounds, 50), bounds.size.w, SCALE_H(bounds, 80)));
 	text_layer_set_text(s_no_movies_layer, "");
-	text_layer_set_font(s_no_movies_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+	text_layer_set_font(s_no_movies_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_28_BOLD)));
 	text_layer_set_text_alignment(s_no_movies_layer, GTextAlignmentCenter);
     layer_add_child(window_layer, text_layer_get_layer(s_no_movies_layer));
     

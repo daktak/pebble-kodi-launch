@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include "layout.h"
 #include "tvshows.h"
 
 #define KEY_ERROR     0
@@ -153,9 +154,9 @@ static void episodes_window_load(Window *window) {
 	text_layer_set_text_alignment(s_episodes_loading_layer, GTextAlignmentCenter);
 	text_layer_set_background_color(s_episodes_loading_layer, GColorClear);
 	layer_add_child(window_layer, text_layer_get_layer(s_episodes_loading_layer));
-	s_no_episodes_layer = text_layer_create(GRect(0, 50, bounds.size.w, 80));
+	s_no_episodes_layer = text_layer_create(GRect(0, SCALE_H(bounds, 50), bounds.size.w, SCALE_H(bounds, 80)));
 	text_layer_set_text(s_no_episodes_layer, "");
-	text_layer_set_font(s_no_episodes_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+	text_layer_set_font(s_no_episodes_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_28_BOLD)));
 	text_layer_set_text_alignment(s_no_episodes_layer, GTextAlignmentCenter);
     layer_add_child(window_layer, text_layer_get_layer(s_no_episodes_layer));
     
@@ -271,9 +272,9 @@ static void seasons_window_load(Window *window) {
 	text_layer_set_text_alignment(s_seasons_loading_layer, GTextAlignmentCenter);
 	text_layer_set_background_color(s_seasons_loading_layer, GColorClear);
 	layer_add_child(window_layer, text_layer_get_layer(s_seasons_loading_layer));
-	s_no_seasons_layer = text_layer_create(GRect(0, 50, bounds.size.w, 80));
+	s_no_seasons_layer = text_layer_create(GRect(0, SCALE_H(bounds, 50), bounds.size.w, SCALE_H(bounds, 80)));
 	text_layer_set_text(s_no_seasons_layer, "");
-	text_layer_set_font(s_no_seasons_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+	text_layer_set_font(s_no_seasons_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_28_BOLD)));
 	text_layer_set_text_alignment(s_no_seasons_layer, GTextAlignmentCenter);
     layer_add_child(window_layer, text_layer_get_layer(s_no_seasons_layer));
     
@@ -388,9 +389,9 @@ static void tvshows_window_load(Window *window) {
 	text_layer_set_text_alignment(s_shows_loading_layer, GTextAlignmentCenter);
 	text_layer_set_background_color(s_shows_loading_layer, GColorClear);
 	layer_add_child(window_layer, text_layer_get_layer(s_shows_loading_layer));
-	s_no_shows_layer = text_layer_create(GRect(0, 50, bounds.size.w, 80));
+	s_no_shows_layer = text_layer_create(GRect(0, SCALE_H(bounds, 50), bounds.size.w, SCALE_H(bounds, 80)));
 	text_layer_set_text(s_no_shows_layer, "");
-	text_layer_set_font(s_no_shows_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+	text_layer_set_font(s_no_shows_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_28_BOLD)));
 	text_layer_set_text_alignment(s_no_shows_layer, GTextAlignmentCenter);
     layer_add_child(window_layer, text_layer_get_layer(s_no_shows_layer));
     
@@ -511,9 +512,9 @@ static void recent_window_load(Window *window) {
 	text_layer_set_text_alignment(s_recent_loading_layer, GTextAlignmentCenter);
 	text_layer_set_background_color(s_recent_loading_layer, GColorClear);
 	layer_add_child(window_layer, text_layer_get_layer(s_recent_loading_layer));
-	s_no_recent_layer = text_layer_create(GRect(0, 50, bounds.size.w, 80));
+	s_no_recent_layer = text_layer_create(GRect(0, SCALE_H(bounds, 50), bounds.size.w, SCALE_H(bounds, 80)));
 	text_layer_set_text(s_no_recent_layer, "");
-	text_layer_set_font(s_no_recent_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+	text_layer_set_font(s_no_recent_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_28_BOLD)));
 	text_layer_set_text_alignment(s_no_recent_layer, GTextAlignmentCenter);
     layer_add_child(window_layer, text_layer_get_layer(s_no_recent_layer));
     

@@ -1,173 +1,167 @@
 {
-    "author": "YS",
-    "dependencies": {},
-    "keywords": [],
-    "name": "kodi-launch",
-    "pebble": {
-        "capabilities": [
-            "configurable"
-        ],
-        "displayName": "Kodi Launch",
-        "enableMultiJS": false,
-        "messageKeys": {
-            "ERROR": 0,
-            "data_request": 1,
-            "data_request_id": 100,
-            "data_request_id2": 101,
-            "dsp_program": 7,
-            "goto_next": 905,
-            "goto_previous": 904,
-            "input_name": 6,
-            "input_title": 5,
-            "mute": 4,
-            "mute_toggle": 13,
-            "nav_keypress": 30,
-            "nb_items": 9999,
-            "play_channel": 1002,
-            "play_episode": 1000,
-            "play_movie": 1001,
-            "play_pause": 902,
-            "playback_elapsed": 10,
-            "playback_main": 8,
-            "playback_status": 14,
-            "playback_sub": 9,
-            "skip_fwd": 901,
-            "skip_rev": 900,
-            "stop": 903,
-            "system_action": 200,
-            "volume": 3,
-            "volume_down": 12,
-            "volume_down_long": 22,
-            "volume_up": 11,
-            "volume_up_long": 21
-        },
-        "projectType": "native",
-        "resources": {
-            "media": [
-                {
-                    "file": "images/logo25.png",
-                    "menuIcon": true,
-                    "name": "APP_LOGO",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/volume-up.png",
-                    "name": "ICON_VOLUME_UP",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/volume-mute.png",
-                    "name": "ICON_VOLUME_MUTE",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/volume-down.png",
-                    "name": "ICON_VOLUME_DOWN",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/tv.png",
-                    "name": "ICON_TV",
-                    "targetPlatforms": [
-                        "aplite",
-                        "basalt",
-                        "chalk",
-                        "diorite"
-                    ],
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/skip-rev.png",
-                    "name": "ICON_SKIP_REV",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/skip-fwd.png",
-                    "name": "ICON_SKIP_FWD",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/play.png",
-                    "name": "ICON_PLAY",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pause.png",
-                    "name": "ICON_PAUSE",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/navigation.png",
-                    "name": "ICON_NAVIGATION",
-                    "targetPlatforms": [
-                        "aplite",
-                        "basalt",
-                        "chalk",
-                        "diorite"
-                    ],
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/movie.png",
-                    "name": "ICON_MOVIE",
-                    "targetPlatforms": [
-                        "aplite",
-                        "basalt",
-                        "chalk",
-                        "diorite"
-                    ],
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/Volume-On.png",
-                    "name": "ICON_VOLUME",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/Volume-Off.png",
-                    "name": "ICON_VOLUMEMUTED",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/Power.png",
-                    "name": "ICON_POWER",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/Note.png",
-                    "name": "ICON_NOTE",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/Microphone.png",
-                    "name": "ICON_MIC",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                }
-            ]
-        },
-        "sdkVersion": "3",
-        "targetPlatforms": [
-            "basalt",
-            "chalk",
-            "diorite"
-        ],
-        "uuid": "1e62831c-d96c-4859-bce8-31fa16ce764f",
-        "watchapp": {
-            "watchface": false
-        }
+  "author": "YS",
+  "dependencies": {
+    "@rebble/clay": "^1.0.10",
+    "base-64": "^1.0.0"
+  },
+  "keywords": [],
+  "name": "kodi-launch",
+  "pebble": {
+    "capabilities": [
+      "configurable"
+    ],
+    "displayName": "Kodi Launch",
+    "enableMultiJS": true,
+    "messageKeys": {
+      "ERROR": 0,
+      "data_request": 1,
+      "data_request_id": 100,
+      "data_request_id2": 101,
+      "dsp_program": 7,
+      "goto_next": 905,
+      "goto_previous": 904,
+      "input_name": 6,
+      "input_title": 5,
+      "kodi_ip": 50,
+      "kodi_user": 51,
+      "kodi_password": 52,
+      "mute": 4,
+      "mute_toggle": 13,
+      "nav_keypress": 30,
+      "nb_items": 9999,
+      "play_channel": 1002,
+      "play_episode": 1000,
+      "play_movie": 1001,
+      "play_pause": 902,
+      "playback_elapsed": 10,
+      "playback_main": 8,
+      "playback_status": 14,
+      "playback_sub": 9,
+      "skip_fwd": 901,
+      "skip_rev": 900,
+      "stop": 903,
+      "system_action": 200,
+      "volume": 3,
+      "volume_down": 12,
+      "volume_down_long": 22,
+      "volume_up": 11,
+      "volume_up_long": 21
     },
-    "version": "1.2.0"
+    "projectType": "native",
+    "resources": {
+      "media": [
+        {
+          "file": "images/logo25.png",
+          "menuIcon": true,
+          "name": "APP_LOGO",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/volume-up.png",
+          "name": "ICON_VOLUME_UP",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/volume-mute.png",
+          "name": "ICON_VOLUME_MUTE",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/volume-down.png",
+          "name": "ICON_VOLUME_DOWN",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/tv.png",
+          "name": "ICON_TV",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/skip-rev.png",
+          "name": "ICON_SKIP_REV",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/skip-fwd.png",
+          "name": "ICON_SKIP_FWD",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/play.png",
+          "name": "ICON_PLAY",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/pause.png",
+          "name": "ICON_PAUSE",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/navigation.png",
+          "name": "ICON_NAVIGATION",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/movie.png",
+          "name": "ICON_MOVIE",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/Volume-On.png",
+          "name": "ICON_VOLUME",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/Volume-Off.png",
+          "name": "ICON_VOLUMEMUTED",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/Power.png",
+          "name": "ICON_POWER",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/Note.png",
+          "name": "ICON_NOTE",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/Microphone.png",
+          "name": "ICON_MIC",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        }
+      ]
+    },
+    "sdkVersion": "3",
+    "targetPlatforms": [
+      "basalt",
+      "chalk",
+      "diorite",
+      "emery",
+      "gabbro",
+      "flint"
+    ],
+    "uuid": "1e62831c-d96c-4859-bce8-31fa16ce764f",
+    "watchapp": {
+      "watchface": false
+    }
+  },
+  "version": "1.3.0"
 }

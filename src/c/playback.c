@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include "layout.h"
 #include "playback.h"
 
 static Window *s_main_window = NULL;
@@ -97,7 +98,7 @@ static void window_load(Window *window) {
 
   //s_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CONFIRM);
 
-  const GEdgeInsets title_insets = {.top = 3, .right = ACTION_BAR_WIDTH, .bottom = 21, .left = ACTION_BAR_WIDTH / 4};
+  const GEdgeInsets title_insets = {.top = SCALE_H(bounds, 3), .right = ACTION_BAR_WIDTH, .bottom = SCALE_H(bounds, 21), .left = ACTION_BAR_WIDTH / 4};
   //s_icon_layer = bitmap_layer_create(grect_inset(bounds, icon_insets));
   //bitmap_layer_set_bitmap(s_icon_layer, s_icon_bitmap);
   //bitmap_layer_set_compositing_mode(s_icon_layer, GCompOpSet);
@@ -105,10 +106,10 @@ static void window_load(Window *window) {
   s_title_layer = text_layer_create(grect_inset(bounds, title_insets));
   text_layer_set_background_color(s_title_layer, GColorClear);
   text_layer_set_text_alignment(s_title_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_title_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
+  text_layer_set_font(s_title_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_14_BOLD, FONT_KEY_GOTHIC_14_BOLD, FONT_KEY_GOTHIC_18_BOLD)));
   layer_add_child(window_layer, text_layer_get_layer(s_title_layer));
 
-  const GEdgeInsets elapsed_insets = {.top = 18, .right = ACTION_BAR_WIDTH, .left = ACTION_BAR_WIDTH / 4};
+  const GEdgeInsets elapsed_insets = {.top = SCALE_H(bounds, 18), .right = ACTION_BAR_WIDTH, .left = ACTION_BAR_WIDTH / 4};
   s_elapsed_layer = text_layer_create(grect_inset(bounds, elapsed_insets));
 
   text_layer_set_background_color(s_elapsed_layer, GColorClear);
@@ -116,20 +117,20 @@ static void window_load(Window *window) {
   text_layer_set_font(s_elapsed_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
   layer_add_child(window_layer, text_layer_get_layer(s_elapsed_layer));
   
-  const GEdgeInsets mainline_insets = {.top = 34, .right = ACTION_BAR_WIDTH, .bottom = 56, .left = ACTION_BAR_WIDTH / 4};
+  const GEdgeInsets mainline_insets = {.top = SCALE_H(bounds, 34), .right = ACTION_BAR_WIDTH, .bottom = SCALE_H(bounds, 56), .left = ACTION_BAR_WIDTH / 4};
   s_mainline_layer = text_layer_create(grect_inset(bounds, mainline_insets));
 
   text_layer_set_background_color(s_mainline_layer, GColorClear);
   text_layer_set_text_alignment(s_mainline_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_mainline_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  text_layer_set_font(s_mainline_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_28_BOLD)));
   layer_add_child(window_layer, text_layer_get_layer(s_mainline_layer));
 
-  const GEdgeInsets subline_insets = {.top = 115, .right = ACTION_BAR_WIDTH, .left = ACTION_BAR_WIDTH / 4};
+  const GEdgeInsets subline_insets = {.top = SCALE_H(bounds, 115), .right = ACTION_BAR_WIDTH, .left = ACTION_BAR_WIDTH / 4};
   s_subline_layer = text_layer_create(grect_inset(bounds, subline_insets));
 
   text_layer_set_background_color(s_subline_layer, GColorClear);
   text_layer_set_text_alignment(s_subline_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_subline_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+  text_layer_set_font(s_subline_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_18_BOLD, FONT_KEY_GOTHIC_18_BOLD, FONT_KEY_GOTHIC_24_BOLD)));
   layer_add_child(window_layer, text_layer_get_layer(s_subline_layer));
 
   s_down_bitmap = gbitmap_create_with_resource(RESOURCE_ID_ICON_SKIP_FWD);

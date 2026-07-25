@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include "layout.h"
 #include "navigation.h"
 
 #include <pebble.h>
@@ -87,7 +88,8 @@ static void window_load(Window *window) {
 
     //s_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CONFIRM);
 
-    const GEdgeInsets title_insets = {.top = 7, .right = 0, .bottom = 56, .left = 0};
+    const int16_t round_inset = PBL_IF_ROUND_ELSE(SCALE_W(bounds, 20), 0);
+    const GEdgeInsets title_insets = {.top = SCALE_H(bounds, 7), .right = round_inset, .bottom = SCALE_H(bounds, 56), .left = round_inset};
     //s_icon_layer = bitmap_layer_create(grect_inset(bounds, icon_insets));
     //bitmap_layer_set_bitmap(s_icon_layer, s_icon_bitmap);
     //bitmap_layer_set_compositing_mode(s_icon_layer, GCompOpSet);
@@ -96,16 +98,16 @@ static void window_load(Window *window) {
     text_layer_set_text(s_title_layer, "Navigation");
     text_layer_set_background_color(s_title_layer, GColorClear);
     text_layer_set_text_alignment(s_title_layer, GTextAlignmentCenter);
-    text_layer_set_font(s_title_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+    text_layer_set_font(s_title_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_18_BOLD, FONT_KEY_GOTHIC_18_BOLD, FONT_KEY_GOTHIC_24_BOLD)));
     layer_add_child(window_layer, text_layer_get_layer(s_title_layer));
 
-    const GEdgeInsets label_insets = {.top = 50, .right = 0, .left = 0};
+    const GEdgeInsets label_insets = {.top = SCALE_H(bounds, 50), .right = round_inset, .left = round_inset};
     s_label_layer = text_layer_create(grect_inset(bounds, label_insets));
     text_layer_set_text(s_label_layer, "Use 4 buttons to move + double clicks, hold Back button to exit");
 
     text_layer_set_background_color(s_label_layer, GColorClear);
     text_layer_set_text_alignment(s_label_layer, GTextAlignmentCenter);
-    text_layer_set_font(s_label_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+    text_layer_set_font(s_label_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_28_BOLD)));
     layer_add_child(window_layer, text_layer_get_layer(s_label_layer));
     
     window_set_click_config_provider(window, (ClickConfigProvider) navigation_click_config_provider);

@@ -1,5 +1,5 @@
 #include <pebble.h>
-
+#include "layout.h"
 #include "movies.h"
 #include "navigation.h"
 #include "volume.h"
@@ -24,8 +24,8 @@
 #define KEY_POWER_TOGGLE  999
 
 
-#define BIG_MENUITEM_HEIGHT 44
-#define SMALL_MENUITEM_HEIGHT 28
+#define BIG_MENUITEM_HEIGHT_BASE 44
+#define SMALL_MENUITEM_HEIGHT_BASE 28
 
 
 static Window *s_main_window;
@@ -100,19 +100,25 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
     case 6:
       menu_cell_basic_draw(ctx, cell_layer, "System", NULL, s_power_icon);
       break;
-    //case 6:
-    //  menu_cell_basic_draw(ctx, cell_layer, "Music", NULL, s_dsp_icon);
-    //  break;
     default:
       break;
   }
+}
+
+static int16_t get_cell_height_for_row(struct MenuLayer *menu_layer, uint16_t row) {
+  Layer *root = window_get_root_layer(layer_get_window(menu_layer_get_layer(menu_layer)));
+  if (root) {
+    GRect bounds = layer_get_bounds(root);
+    return (row != 0) ? SCALE_H(bounds, SMALL_MENUITEM_HEIGHT_BASE) : SCALE_H(bounds, BIG_MENUITEM_HEIGHT_BASE);
+  }
+  return (row != 0) ? SMALL_MENUITEM_HEIGHT_BASE : BIG_MENUITEM_HEIGHT_BASE;
 }
 
 static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
   return PBL_IF_ROUND_ELSE(
     menu_layer_is_index_selected(menu_layer, cell_index) ?
       MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_TALL_CELL_HEIGHT,
-    (cell_index->row != 0) ? SMALL_MENUITEM_HEIGHT : BIG_MENUITEM_HEIGHT);
+    get_cell_height_for_row(menu_layer, cell_index->row));
 }
 
 static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
@@ -160,7 +166,7 @@ static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index,
 static void menu_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
-  
+
   s_power_icon = gbitmap_create_with_resource(RESOURCE_ID_ICON_POWER);
   s_volume_icon = gbitmap_create_with_resource(RESOURCE_ID_ICON_VOLUME);
   s_volumemuted_icon = gbitmap_create_with_resource(RESOURCE_ID_ICON_VOLUMEMUTED);
@@ -214,11 +220,10 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
     s_playback_elapsed = dict_find(iter, KEY_PLAYBACK_ELAPSED);
     s_playback_status = dict_find(iter, KEY_PLAYBACK_STATUS);
 
-
     if (s_error) {
         strncpy(s_error_text, s_error->value->cstring, strlen(s_error->value->cstring));
         text_layer_set_text(s_text_layer, s_error_text);
-    } else {
+    } else if (s_playback_main && s_playback_status && s_input_title && s_playback_sub && s_playback_elapsed && s_mute && s_volume) {
         snprintf(s_input_title_text, sizeof(s_input_title_text), "%s", s_input_title->value->cstring);
         snprintf(s_playback_main_text, sizeof(s_playback_main_text), "%s", s_playback_main->value->cstring);
         snprintf(s_playback_sub_text, sizeof(s_playback_sub_text), "%s", s_playback_sub->value->cstring);
@@ -228,17 +233,7 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
         snprintf(s_volume_text, sizeof(s_volume_text), "%s %%", s_volume->value->cstring);
         snprintf(s_volume_text_label, sizeof(s_volume_text_label), "Volume: %s", s_volume->value->cstring);
 
-        /*strncpy(s_input_name_text, s_input_name->value->cstring, strlen(s_input_name->value->cstring));
-        strncpy(s_input_title_text, s_input_title->value->cstring, strlen(s_input_title->value->cstring));
-        strncpy(s_playback_main_text, s_playback_main->value->cstring, strlen(s_playback_main->value->cstring));
-        strncpy(s_playback_sub_text, s_playback_sub->value->cstring, strlen(s_playback_sub->value->cstring));
-        strncpy(s_playback_elapsed_text, s_playback_elapsed->value->cstring, strlen(s_playback_elapsed->value->cstring));
-        strncpy(s_playback_status_text, s_playback_status->value->cstring, strlen(s_playback_status->value->cstring));
-        strncpy(s_mute_text, s_mute->value->cstring, strlen(s_mute->value->cstring));
-        strncpy(s_volume_text, s_volume->value->cstring, strlen(s_volume->value->cstring));*/
-
         if (!s_menu_window) {
-            // build menu now
             s_menu_window = window_create();
             window_set_window_handlers(s_menu_window, (WindowHandlers) {
                 .load = menu_load,
@@ -258,7 +253,7 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
 }
 
 static void inbox_error_handler(AppMessageResult reason, void *context) {
-  APP_LOG(APP_LOG_LEVEL_INFO, "app message inbox failure: %d", reason);
+  APP_LOG(APP_LOG_LEVEL_ERROR, "inbox failure: %d", reason);
 }
 
 /* Splash window */
@@ -267,19 +262,19 @@ static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  s_text_layer = text_layer_create(GRect(0, 50, bounds.size.w, 100));
+  s_text_layer = text_layer_create(GRect(0, SCALE_H(bounds, 50), bounds.size.w, SCALE_H(bounds, 100)));
   text_layer_set_text(s_text_layer, "Connecting...");
-  text_layer_set_font(s_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  text_layer_set_font(s_text_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_28_BOLD)));
   text_layer_set_text_alignment(s_text_layer, GTextAlignmentCenter);
   text_layer_set_background_color(s_text_layer, GColorClear);
   layer_add_child(window_layer, text_layer_get_layer(s_text_layer));
-  
-  DictionaryIterator *iter; 
-  uint8_t value = 1; 
-  app_message_outbox_begin(&iter); 
-  dict_write_int(iter, KEY_DATA_REQUEST, &value, 1, true); 
-  dict_write_end(iter); 
-  app_message_outbox_send(); 
+
+  DictionaryIterator *iter;
+  uint8_t value = 1;
+  app_message_outbox_begin(&iter);
+  dict_write_int(iter, KEY_DATA_REQUEST, &value, 1, true);
+  dict_write_end(iter);
+  app_message_outbox_send();
 }
 
 static void window_unload(Window *window) {
@@ -296,17 +291,11 @@ static void init() {
     .unload = window_unload,
   });
 
-#ifdef PBL_PLATFORM_APLITE
-  int inbox_size = 3000;
-#else
-  int inbox_size = app_message_inbox_size_maximum(); // - 2800;
-#endif
-  APP_LOG(APP_LOG_LEVEL_INFO, "opening inbox with size=%d", inbox_size);
+  int inbox_size = app_message_inbox_size_maximum();
   app_message_open(inbox_size, 100);
   app_message_register_inbox_received(inbox_received_handler);
   app_message_register_inbox_dropped(inbox_error_handler);
 
-  
   window_stack_push(s_main_window, true);
 }
 

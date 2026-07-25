@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include "layout.h"
 #include "livetv.h"
 
 #define KEY_ERROR     0
@@ -137,9 +138,9 @@ static void channels_window_load(Window *window) {
 	text_layer_set_text_alignment(s_channels_loading_layer, GTextAlignmentCenter);
 	text_layer_set_background_color(s_channels_loading_layer, GColorClear);
 	layer_add_child(window_layer, text_layer_get_layer(s_channels_loading_layer));
-	s_no_channels_layer = text_layer_create(GRect(0, 50, bounds.size.w, 80));
+	s_no_channels_layer = text_layer_create(GRect(0, SCALE_H(bounds, 50), bounds.size.w, SCALE_H(bounds, 80)));
 	text_layer_set_text(s_no_channels_layer, "");
-	text_layer_set_font(s_no_channels_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+	text_layer_set_font(s_no_channels_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_28_BOLD)));
 	text_layer_set_text_alignment(s_no_channels_layer, GTextAlignmentCenter);
     layer_add_child(window_layer, text_layer_get_layer(s_no_channels_layer));
     

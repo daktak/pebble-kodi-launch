@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include "layout.h"
 #include "volume.h"
 
 static Window *s_main_window = NULL;
@@ -82,7 +83,7 @@ static void window_load(Window *window) {
 
   //s_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CONFIRM);
 
-  const GEdgeInsets title_insets = {.top = 7, .right = 28, .bottom = 56, .left = 14};
+  const GEdgeInsets title_insets = {.top = SCALE_H(bounds, 7), .right = ACTION_BAR_WIDTH, .bottom = SCALE_H(bounds, 56), .left = SCALE_W(bounds, 14)};
   //s_icon_layer = bitmap_layer_create(grect_inset(bounds, icon_insets));
   //bitmap_layer_set_bitmap(s_icon_layer, s_icon_bitmap);
   //bitmap_layer_set_compositing_mode(s_icon_layer, GCompOpSet);
@@ -91,10 +92,10 @@ static void window_load(Window *window) {
   text_layer_set_text(s_title_layer, "Volume");
   text_layer_set_background_color(s_title_layer, GColorClear);
   text_layer_set_text_alignment(s_title_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_title_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+  text_layer_set_font(s_title_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_18_BOLD, FONT_KEY_GOTHIC_18_BOLD, FONT_KEY_GOTHIC_24_BOLD)));
   layer_add_child(window_layer, text_layer_get_layer(s_title_layer));
 
-  const GEdgeInsets label_insets = {.top = 112, .right = ACTION_BAR_WIDTH, .left = ACTION_BAR_WIDTH / 2};
+  const GEdgeInsets label_insets = {.top = SCALE_H(bounds, 112), .right = ACTION_BAR_WIDTH, .left = ACTION_BAR_WIDTH / 2};
   s_label_layer = text_layer_create(grect_inset(bounds, label_insets));
 
   /*if (!strcmp(s_mute->value->cstring, "On")) {
@@ -106,7 +107,7 @@ static void window_load(Window *window) {
   //volume_window_refresh(); // initial refresh
   text_layer_set_background_color(s_label_layer, GColorClear);
   text_layer_set_text_alignment(s_label_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_label_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+  text_layer_set_font(s_label_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_28_BOLD, FONT_KEY_GOTHIC_28_BOLD, FONT_KEY_GOTHIC_28_BOLD)));
   layer_add_child(window_layer, text_layer_get_layer(s_label_layer));
 
   s_down_bitmap = gbitmap_create_with_resource(RESOURCE_ID_ICON_VOLUME_DOWN);
