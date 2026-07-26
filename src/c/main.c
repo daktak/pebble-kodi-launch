@@ -109,7 +109,7 @@ static int16_t get_cell_height_for_row(struct MenuLayer *menu_layer, uint16_t ro
   Layer *root = window_get_root_layer(layer_get_window(menu_layer_get_layer(menu_layer)));
   if (root) {
     GRect bounds = layer_get_bounds(root);
-    return (row != 0) ? SCALE_H(bounds, SMALL_MENUITEM_HEIGHT_BASE) : SCALE_H(bounds, BIG_MENUITEM_HEIGHT_BASE);
+    return (row != 0) ? bounds.size.h * 2 / 15 : bounds.size.h / 5;
   }
   return (row != 0) ? SMALL_MENUITEM_HEIGHT_BASE : BIG_MENUITEM_HEIGHT_BASE;
 }
