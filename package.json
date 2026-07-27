@@ -147,6 +147,30 @@
           "name": "ICON_MIC",
           "targetPlatforms": null,
           "type": "bitmap"
+        },
+        {
+          "file": "images/stop.png",
+          "name": "ICON_STOP",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/up.png",
+          "name": "ICON_UP",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/down.png",
+          "name": "ICON_DOWN",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/check.png",
+          "name": "ICON_CHECK",
+          "targetPlatforms": null,
+          "type": "bitmap"
         }
       ]
     },

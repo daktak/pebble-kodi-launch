@@ -16,7 +16,7 @@ void volume_window_refresh(char *value, char *mute) {
   if (!s_main_window || !s_label_layer) {
     return;
   }
-  if (!strcmp(mute, "On")) {
+  if (!strcmp(mute, "Mute")) {
     text_layer_set_text(s_label_layer, "Muted");
   } else {
     text_layer_set_text(s_label_layer, value);

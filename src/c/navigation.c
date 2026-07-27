@@ -4,9 +4,7 @@
 
 #include <pebble.h>
 #include "volume.h"
-
-
-#define KEY_NAV_KEYPRESS  30
+#include "playback.h"
 
 #define VAL_NAV_LEFT     1
 #define VAL_NAV_RIGHT    2
