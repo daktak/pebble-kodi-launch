@@ -54,6 +54,10 @@ static SimpleMenuSection s_movies_menu_section;
 static SimpleMenuLayer *s_movies_menu_layer;
 char s_movies_sortcriteria[32];
 
+static void defer_pop_all(void *data) {
+    window_stack_pop_all(true);
+}
+
 static void play_movie(int index, void *context) {
     uint32_t movieid = s_movieids[index];
     
@@ -70,7 +74,7 @@ static void play_movie(int index, void *context) {
     
     // then pop all & exit
     exit_reason_set(APP_EXIT_ACTION_PERFORMED_SUCCESSFULLY);
-    window_stack_pop_all(true);
+    app_timer_register(1, defer_pop_all, NULL);
 }
 
 
@@ -151,10 +155,11 @@ static void movies_window_unload(Window *window) {
     app_message_register_inbox_received(s_main_msg_callback);
   
 	DictionaryIterator *iter;
-	app_message_outbox_begin(&iter);
-	dict_write_cstring(iter, KEY_DATA_REQUEST, "getbasicinfo");
-	dict_write_end(iter);
-	app_message_outbox_send();
+	if (app_message_outbox_begin(&iter) == APP_MSG_OK) {
+		dict_write_cstring(iter, KEY_DATA_REQUEST, "getbasicinfo");
+		dict_write_end(iter);
+		app_message_outbox_send();
+	}
 }
 
 static void show_all_movies(ActionMenu *action_menu, const ActionMenuItem *action, void *context) {

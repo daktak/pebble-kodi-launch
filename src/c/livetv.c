@@ -9,6 +9,7 @@
 #define KEY_FIRST_ITEM    10000
 #define ITEM_SIZE    10
 #define KEY_PLAY_CHANNEL    1002
+#define KEY_PLAY_RECORDING    1003
 
 #define MENUITEM_BUFFER_SIZE    64
 
@@ -162,10 +163,11 @@ static void channels_window_unload(Window *window) {
     app_message_register_inbox_received(s_main_msg_callback);
     
 	DictionaryIterator *iter;
-	app_message_outbox_begin(&iter);
-	dict_write_cstring(iter, KEY_DATA_REQUEST, "getbasicinfo");
-	dict_write_end(iter);
-	app_message_outbox_send();
+	if (app_message_outbox_begin(&iter) == APP_MSG_OK) {
+		dict_write_cstring(iter, KEY_DATA_REQUEST, "getbasicinfo");
+		dict_write_end(iter);
+		app_message_outbox_send();
+	}
 }
 
 static void show_channels(ActionMenu *action_menu, const ActionMenuItem *action, void *context) {
@@ -183,6 +185,141 @@ static void show_channels(ActionMenu *action_menu, const ActionMenuItem *action,
         });
     }
     window_stack_push(s_channels_window, true);
+}
+
+
+/*
+RECENT RECORDINGS LIST
+*/
+
+static Window *s_recordings_window;
+static TextLayer *s_recordings_loading_layer;
+static TextLayer *s_no_recordings_layer;
+static SimpleMenuItem *s_recordings_menu_items = NULL;
+static SimpleMenuSection s_recordings_menu_section;
+static SimpleMenuLayer *s_recordings_menu_layer;
+
+static uint32_t s_recordingids[50];
+static char *s_recordings_titles;
+static char *s_recordings_subtitles;
+
+static void defer_pop_all(void *data) {
+    window_stack_pop_all(true);
+}
+
+static void play_recording(int index, void *context) {
+    uint32_t recordingid = s_recordingids[index];
+
+    snprintf(s_appglance, sizeof(s_appglance), "%s", s_recordings_menu_items[index].title);
+
+    app_glance_reload(set_app_glance, NULL);
+
+	DictionaryIterator *iter;
+	app_message_outbox_begin(&iter);
+	dict_write_uint32(iter, KEY_PLAY_RECORDING, recordingid);
+	dict_write_end(iter);
+	app_message_outbox_send();
+
+    exit_reason_set(APP_EXIT_ACTION_PERFORMED_SUCCESSFULLY);
+    app_timer_register(1, defer_pop_all, NULL);
+}
+
+static void recordings_list_received(DictionaryIterator *iter, void *context) {
+    s_error = dict_find(iter, KEY_ERROR);
+
+ 	Tuple *nb_items_tuple = dict_find(iter, KEY_NB_MENU_ITEMS);
+    if (!nb_items_tuple || nb_items_tuple->value->int32 < 1) {
+        text_layer_set_text(s_recordings_loading_layer, "");
+        text_layer_set_text(s_no_recordings_layer, "No recordings");
+        return;
+    }
+
+    int nb_items = nb_items_tuple->value->int32;
+
+    s_recordings_menu_items = calloc(nb_items, sizeof(SimpleMenuItem));
+    s_recordings_titles = calloc(nb_items, MENUITEM_BUFFER_SIZE);
+    s_recordings_subtitles = calloc(nb_items, MENUITEM_BUFFER_SIZE);
+
+    for (int i = 0; i < nb_items; i++) {
+        Tuple *title_tuple = dict_find(iter, KEY_FIRST_ITEM + (i * ITEM_SIZE) + 1);
+        Tuple *subtitle_tuple = dict_find(iter, KEY_FIRST_ITEM + (i * ITEM_SIZE) + 2);
+        Tuple *id_tuple = dict_find(iter, KEY_FIRST_ITEM + (i * ITEM_SIZE) + 0);
+        s_recordingids[i] = id_tuple->value->uint32;
+        snprintf(s_recordings_titles + i*MENUITEM_BUFFER_SIZE, MENUITEM_BUFFER_SIZE, "%s", title_tuple->value->cstring);
+        snprintf(s_recordings_subtitles + i*MENUITEM_BUFFER_SIZE, MENUITEM_BUFFER_SIZE, "%s", subtitle_tuple->value->cstring);
+        s_recordings_menu_items[i].title = s_recordings_titles + i*MENUITEM_BUFFER_SIZE;
+        s_recordings_menu_items[i].subtitle = s_recordings_subtitles + i*MENUITEM_BUFFER_SIZE;
+        s_recordings_menu_items[i].icon = NULL;
+        s_recordings_menu_items[i].callback = play_recording;
+    }
+
+    s_recordings_menu_section = (SimpleMenuSection) {
+        "Recordings", s_recordings_menu_items, nb_items
+    };
+
+    Layer *window_layer = window_get_root_layer(s_recordings_window);
+	GRect bounds = layer_get_bounds(window_layer);
+
+    s_recordings_menu_layer = simple_menu_layer_create(bounds, s_recordings_window, &s_recordings_menu_section, 1, NULL);
+#ifdef PBL_COLOR
+    menu_layer_set_highlight_colors(simple_menu_layer_get_menu_layer(s_recordings_menu_layer), GColorChromeYellow, GColorWhite);
+#endif
+    layer_add_child(window_layer, (Layer *)s_recordings_menu_layer);
+}
+
+static void recordings_window_load(Window *window) {
+	Layer *window_layer = window_get_root_layer(window);
+	GRect bounds = layer_get_bounds(window_layer);
+
+	s_recordings_loading_layer = text_layer_create(GRect(0, bounds.size.h - 16, bounds.size.w, 16));
+	text_layer_set_text(s_recordings_loading_layer, "Loading...");
+	text_layer_set_font(s_recordings_loading_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+	text_layer_set_text_alignment(s_recordings_loading_layer, GTextAlignmentCenter);
+	text_layer_set_background_color(s_recordings_loading_layer, GColorClear);
+	layer_add_child(window_layer, text_layer_get_layer(s_recordings_loading_layer));
+	s_no_recordings_layer = text_layer_create(GRect(0, SCALE_H(bounds, 50), bounds.size.w, SCALE_H(bounds, 80)));
+	text_layer_set_text(s_no_recordings_layer, "");
+	text_layer_set_font(s_no_recordings_layer, fonts_get_system_font(font_for_height(bounds, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_24_BOLD, FONT_KEY_GOTHIC_28_BOLD)));
+	text_layer_set_text_alignment(s_no_recordings_layer, GTextAlignmentCenter);
+    layer_add_child(window_layer, text_layer_get_layer(s_no_recordings_layer));
+
+	DictionaryIterator *iter;
+	app_message_outbox_begin(&iter);
+	dict_write_cstring(iter, KEY_DATA_REQUEST, "recordings");
+	dict_write_end(iter);
+	app_message_outbox_send();
+}
+
+static void recordings_window_unload(Window *window) {
+    text_layer_destroy(s_recordings_loading_layer);
+    text_layer_destroy(s_no_recordings_layer);
+    simple_menu_layer_destroy(s_recordings_menu_layer);
+    free(s_recordings_titles);
+    free(s_recordings_subtitles);
+    free(s_recordings_menu_items);
+    window_destroy(s_recordings_window);
+    s_recordings_window = NULL;
+    app_message_register_inbox_received(s_main_msg_callback);
+
+	DictionaryIterator *iter;
+	if (app_message_outbox_begin(&iter) == APP_MSG_OK) {
+		dict_write_cstring(iter, KEY_DATA_REQUEST, "getbasicinfo");
+		dict_write_end(iter);
+		app_message_outbox_send();
+	}
+}
+
+static void show_recordings(ActionMenu *action_menu, const ActionMenuItem *action, void *context) {
+    s_main_msg_callback = app_message_register_inbox_received(recordings_list_received);
+
+    if(!s_recordings_window) {
+        s_recordings_window = window_create();
+        window_set_window_handlers(s_recordings_window, (WindowHandlers) {
+            .load = recordings_window_load,
+            .unload = recordings_window_unload,
+        });
+    }
+    window_stack_push(s_recordings_window, true);
 }
 
 
@@ -208,7 +345,10 @@ static void channelgroups_list_received(DictionaryIterator *iter, void *context)
     s_channelgroups_titles = calloc(nb_items, MENUITEM_BUFFER_SIZE);
 
     // Create the root level
-    s_root_level = action_menu_level_create(nb_items);
+    s_root_level = action_menu_level_create(nb_items + 1);
+
+    // Add recent recordings first
+    action_menu_level_add_action(s_root_level, "Recent recordings", show_recordings, NULL);
 
     // Create the menu entries
     for (int i = 0; i < nb_items; i++) {

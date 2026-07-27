@@ -439,6 +439,46 @@ var getChannels = function (channelgroupid) {
   );
 };
 
+var getRecordings = function () {
+  sendRequest(
+    "PVR.GetRecordings",
+    {
+      properties: ["showtitle", "title", "season", "episode"],
+      sort: { method: "dateadded", order: "descending" },
+      limits: { start: 0, end: 30 },
+    },
+    function (err, data) {
+      if (data) {
+        var dict = { nb_items: data.result.recordings.length };
+        for (var i = 0; i < dict.nb_items; i++) {
+          dict[(10000 + i * 10 + 0).toString()] =
+            data.result.recordings[i].recordingid;
+          dict[(10000 + i * 10 + 1).toString()] =
+            data.result.recordings[i].showtitle ||
+            data.result.recordings[i].label;
+          dict[(10000 + i * 10 + 2).toString()] =
+            data.result.recordings[i].title || data.result.recordings[i].label;
+        }
+        console.log(JSON.stringify(dict));
+        send(dict);
+      } else {
+        send({ ERROR: "Error " + err });
+      }
+    }
+  );
+};
+
+var playRecording = function (recordingid) {
+  console.log("Playing recordingid: " + recordingid);
+  sendRequest(
+    "Player.Open",
+    {
+      item: { recordingid: recordingid },
+    },
+    function (err, data) {}
+  );
+};
+
 var playMovie = function (movieid) {
   sendRequest(
     "VideoLibrary.GetMovieDetails",
@@ -566,6 +606,9 @@ Pebble.addEventListener("appmessage", function (e) {
           getChannels(e.payload.data_request_id, {});
         }
         break;
+      case "recordings":
+        getRecordings();
+        break;
       default:
         console.log("Invalid data request");
     }
@@ -608,6 +651,8 @@ Pebble.addEventListener("appmessage", function (e) {
     playMovie(e.payload.play_movie);
   } else if (e.payload.play_channel) {
     playChannel(e.payload.play_channel);
+  } else if (e.payload.play_recording) {
+    playRecording(e.payload.play_recording);
   } else if (e.payload.play_pause) {
     sendToCurrentPlayer("Player.PlayPause", { play: "toggle" });
   } else if (e.payload.stop) {

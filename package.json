@@ -32,6 +32,7 @@
       "play_channel": 1002,
       "play_episode": 1000,
       "play_movie": 1001,
+      "play_recording": 1003,
       "play_pause": 902,
       "playback_elapsed": 10,
       "playback_main": 8,
@@ -163,5 +164,5 @@
       "watchface": false
     }
   },
-  "version": "1.3.0"
+  "version": "1.4.0"
 }
