@@ -29,6 +29,7 @@ static uint32_t s_channelids[50];
 
 static char *s_channelgroups_titles;
 static char *s_channels_titles;
+static char *s_channels_subtitles;
 
 
 static char s_appglance[256];
@@ -99,16 +100,23 @@ static void channels_list_received(DictionaryIterator *iter, void *context) {
     int nb_items = nb_items_tuple->value->int32;
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "size=%d", nb_items);
 
-    s_channels_menu_items = malloc(nb_items * sizeof(SimpleMenuItem));
+    s_channels_menu_items = calloc(nb_items, sizeof(SimpleMenuItem));
+    s_channels_titles = calloc(nb_items, MENUITEM_BUFFER_SIZE);
+    s_channels_subtitles = calloc(nb_items, MENUITEM_BUFFER_SIZE);
 
     for (int i = 0; i < nb_items; i++) {
         Tuple *title_tuple = dict_find(iter, KEY_FIRST_ITEM + (i * ITEM_SIZE) + 1);
-        //Tuple *subtitle_tuple = dict_find(iter, KEY_FIRST_ITEM + (i * ITEM_SIZE) + 2);
+        Tuple *subtitle_tuple = dict_find(iter, KEY_FIRST_ITEM + (i * ITEM_SIZE) + 2);
         Tuple *id_tuple = dict_find(iter, KEY_FIRST_ITEM + (i * ITEM_SIZE) + 0);
         s_channelids[i] = id_tuple->value->uint32;
-        //APP_LOG(APP_LOG_LEVEL_DEBUG, "title=%s", title_tuple->value->cstring);
-        s_channels_menu_items[i].title = title_tuple->value->cstring;
-        s_channels_menu_items[i].subtitle = NULL; // subtitle_tuple->value->cstring;
+        snprintf(s_channels_titles + i*MENUITEM_BUFFER_SIZE, MENUITEM_BUFFER_SIZE, "%s", title_tuple->value->cstring);
+        s_channels_menu_items[i].title = s_channels_titles + i*MENUITEM_BUFFER_SIZE;
+        if (subtitle_tuple) {
+            snprintf(s_channels_subtitles + i*MENUITEM_BUFFER_SIZE, MENUITEM_BUFFER_SIZE, "%s", subtitle_tuple->value->cstring);
+            s_channels_menu_items[i].subtitle = s_channels_subtitles + i*MENUITEM_BUFFER_SIZE;
+        } else {
+            s_channels_menu_items[i].subtitle = NULL;
+        }
         s_channels_menu_items[i].icon = NULL;
         s_channels_menu_items[i].callback = play_channel;
     }
@@ -157,6 +165,9 @@ static void channels_window_unload(Window *window) {
     text_layer_destroy(s_channels_loading_layer);
     text_layer_destroy(s_no_channels_layer);
     simple_menu_layer_destroy(s_channels_menu_layer);
+    free(s_channels_titles);
+    free(s_channels_subtitles);
+    free(s_channels_menu_items);
     window_destroy(s_channels_window);
     s_channels_window = NULL;
     APP_LOG(APP_LOG_LEVEL_DEBUG, "restoring main appmessage callback");

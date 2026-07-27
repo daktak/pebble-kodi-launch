@@ -419,16 +419,20 @@ var getChannels = function (channelgroupid) {
     "PVR.GetChannels",
     {
       channelgroupid: channelgroupid,
-      limits: { start: 0, end: 50 },
+      properties: ["broadcastnow"],
+      limits: { start: 0, end: 50 }
     },
     function (err, data) {
       if (data) {
         console.log(JSON.stringify(data));
         var dict = { nb_items: data.result.channels.length };
+        var channels = data.result.channels;
         for (var i = 0; i < dict.nb_items; i++) {
-          dict[(10000 + i * 10 + 0).toString()] =
-            data.result.channels[i].channelid;
-          dict[(10000 + i * 10 + 1).toString()] = data.result.channels[i].label;
+          dict[(10000 + i * 10 + 0).toString()] = channels[i].channelid;
+          dict[(10000 + i * 10 + 1).toString()] = channels[i].label;
+          if (channels[i].broadcastnow && channels[i].broadcastnow.title) {
+            dict[(10000 + i * 10 + 2).toString()] = channels[i].broadcastnow.title;
+          }
         }
         console.log(JSON.stringify(dict));
         send(dict);
